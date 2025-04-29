@@ -24,8 +24,26 @@ namespace CPUSchedulingSim
             chartPerformanceCompare.Series.Clear();
             chartPerformanceCompare.ChartAreas.Clear();
 
-            ChartArea chartArea = new ChartArea();
-            chartPerformanceCompare.ChartAreas.Add(chartArea);
+            ChartArea chartWArea = new ChartArea();
+            chartPerformanceCompare.ChartAreas.Add(chartWArea);
+
+            chartTurnaroundCompare.Series.Clear();
+            chartTurnaroundCompare.ChartAreas.Clear();
+
+            ChartArea chartTArea = new ChartArea();
+            chartTurnaroundCompare.ChartAreas.Add(chartTArea);
+
+            chartCPUPercCompare.Series.Clear();
+            chartCPUPercCompare.ChartAreas.Clear();
+
+            ChartArea chartCArea = new ChartArea();
+            chartCPUPercCompare.ChartAreas.Add(chartCArea);
+
+            chartThroughputCompare.Series.Clear();
+            chartThroughputCompare.ChartAreas.Clear();
+
+            ChartArea chartThrArea = new ChartArea();
+            chartThroughputCompare.ChartAreas.Add(chartThrArea);
         }
 
         // Helper Methods
@@ -148,7 +166,7 @@ namespace CPUSchedulingSim
             if (algorithm == "MLFQ") mlfqResultsAvailable = true;
         }
 
-        private void UpdateCompareChart()
+        private void UpdateWaitCompareChart()
         {
             chartPerformanceCompare.Series.Clear();
             chartPerformanceCompare.ChartAreas.Clear();
@@ -156,28 +174,135 @@ namespace CPUSchedulingSim
             ChartArea chartArea = new ChartArea();
             chartPerformanceCompare.ChartAreas.Add(chartArea);
 
-            Series seriesWaiting = new Series("Average Waiting Time");
-            seriesWaiting.ChartType = SeriesChartType.Column;
-            seriesWaiting.Points.AddXY("SRTF", srtfAvgWaitingTime);
-            seriesWaiting.Points.AddXY("MLFQ", mlfqAvgWaitingTime);
+            // Series for SRTF Metrics
+            Series srtfSeries = new Series("SRTF");
+            srtfSeries.ChartType = SeriesChartType.Column;
+            srtfSeries.Points.AddXY("Avg Wait Time (ms)", srtfAvgWaitingTime);
 
-            Series seriesTurnaround = new Series("Average Turnaround Time");
-            seriesTurnaround.ChartType = SeriesChartType.Column;
-            seriesTurnaround.Points.AddXY("SRTF", srtfAvgTurnaroundTime);
-            seriesTurnaround.Points.AddXY("MLFQ", mlfqAvgTurnaroundTime);
+            // Series for MLFQ Metrics
+            Series mlfqSeries = new Series("MLFQ");
+            mlfqSeries.ChartType = SeriesChartType.Column;
+            mlfqSeries.Points.AddXY("Avg Wait Time (ms)", mlfqAvgWaitingTime);
 
-            chartPerformanceCompare.Series.Add(seriesWaiting);
-            chartPerformanceCompare.Series.Add(seriesTurnaround);
+            // Add both series to chart
+            chartPerformanceCompare.Series.Add(srtfSeries);
+            chartPerformanceCompare.Series.Add(mlfqSeries);
 
+            // Add title
             chartPerformanceCompare.Titles.Clear();
-            chartPerformanceCompare.Titles.Add("Comparison: SRTF vs MLFQ");
+            chartPerformanceCompare.Titles.Add("SRTF vs MLFQ Avg. Wait Time Comparison");
+
+            // Optional: show a legend
+            if (chartPerformanceCompare.Legends.Count == 0)
+                chartPerformanceCompare.Legends.Add(new Legend());
+
+            chartPerformanceCompare.Legends[0].Docking = Docking.Top;
         }
 
-        private void RunSRTFAlg (List<Process> processes)
+        private void UpdateTurnaroundCompareChart()
+        {
+            chartTurnaroundCompare.Series.Clear();
+            chartTurnaroundCompare.ChartAreas.Clear();
+
+            ChartArea chartArea = new ChartArea();
+            chartTurnaroundCompare.ChartAreas.Add(chartArea);
+
+            // Series for SRTF Metrics
+            Series srtfSeries = new Series("SRTF");
+            srtfSeries.ChartType = SeriesChartType.Column;
+            srtfSeries.Points.AddXY("Avg Turnaround Time (ms)", srtfAvgTurnaroundTime);
+
+            // Series for MLFQ Metrics
+            Series mlfqSeries = new Series("MLFQ");
+            mlfqSeries.ChartType = SeriesChartType.Column;
+            mlfqSeries.Points.AddXY("Avg Turnaround Time (ms)", mlfqAvgTurnaroundTime);
+
+            // Add both series to chart
+            chartTurnaroundCompare.Series.Add(srtfSeries);
+            chartTurnaroundCompare.Series.Add(mlfqSeries);
+
+            // Add title
+            chartTurnaroundCompare.Titles.Clear();
+            chartTurnaroundCompare.Titles.Add("SRTF vs MLFQ Avg. Turnaround Comparison");
+
+            // Optional: show a legend
+            if (chartPerformanceCompare.Legends.Count == 0)
+                chartPerformanceCompare.Legends.Add(new Legend());
+
+            chartTurnaroundCompare.Legends[0].Docking = Docking.Top;
+        }
+
+        private void UpdateCPUPercCompareChart()
+        {
+            chartCPUPercCompare.Series.Clear();
+            chartCPUPercCompare.ChartAreas.Clear();
+
+            ChartArea chartArea = new ChartArea();
+            chartCPUPercCompare.ChartAreas.Add(chartArea);
+
+            // Series for SRTF Metrics
+            Series srtfSeries = new Series("SRTF");
+            srtfSeries.ChartType = SeriesChartType.Column;
+            srtfSeries.Points.AddXY("CPU Utilization (%)", srtfCPUPerc);
+
+            // Series for MLFQ Metrics
+            Series mlfqSeries = new Series("MLFQ");
+            mlfqSeries.ChartType = SeriesChartType.Column;
+            mlfqSeries.Points.AddXY("CPU Utilization (%)", mlfqCPUPerc);
+
+            // Add both series to chart
+            chartCPUPercCompare.Series.Add(srtfSeries);
+            chartCPUPercCompare.Series.Add(mlfqSeries);
+
+            // Add title
+            chartCPUPercCompare.Titles.Clear();
+            chartCPUPercCompare.Titles.Add("SRTF vs MLFQ CPU Percentage Comparison");
+
+            // Optional: show a legend
+            if (chartPerformanceCompare.Legends.Count == 0)
+                chartPerformanceCompare.Legends.Add(new Legend());
+
+            chartCPUPercCompare.Legends[0].Docking = Docking.Top;
+        }
+
+        private void UpdateThroughputCompareChart()
+        {
+            chartThroughputCompare.Series.Clear();
+            chartThroughputCompare.ChartAreas.Clear();
+
+            ChartArea chartArea = new ChartArea();
+            chartThroughputCompare.ChartAreas.Add(chartArea);
+
+            // Series for SRTF Metrics
+            Series srtfSeries = new Series("SRTF");
+            srtfSeries.ChartType = SeriesChartType.Column;
+            srtfSeries.Points.AddXY("Throughput (P/s)", srtfThroughput);
+
+            // Series for MLFQ Metrics
+            Series mlfqSeries = new Series("MLFQ");
+            mlfqSeries.ChartType = SeriesChartType.Column;
+            mlfqSeries.Points.AddXY("Throughput (P/s)", mlfqThroughput);
+
+            // Add both series to chart
+            chartThroughputCompare.Series.Add(srtfSeries);
+            chartThroughputCompare.Series.Add(mlfqSeries);
+
+            // Add title
+            chartThroughputCompare.Titles.Clear();
+            chartThroughputCompare.Titles.Add("SRTF vs MLFQ Throughput Comparison");
+
+            // Optional: show a legend
+            if (chartPerformanceCompare.Legends.Count == 0)
+                chartPerformanceCompare.Legends.Add(new Legend());
+
+            chartThroughputCompare.Legends[0].Docking = Docking.Top;
+        }
+
+        private void RunSRTFAlg(List<Process> processes)
         {
             CPUSchedulerAlgs.SRTFAlg(processes);
         }
-        private void RunMLFQAlg (List<Process> processes)
+        private void RunMLFQAlg(List<Process> processes)
         {
             //MessageBox.Show("MLFQ algorithm is starting!"); // Debugging
             CPUSchedulerAlgs.MLFQAlg(processes);
@@ -229,7 +354,10 @@ namespace CPUSchedulingSim
         {
             if (srtfResultsAvailable && mlfqResultsAvailable)
             {
-                UpdateCompareChart();
+                UpdateWaitCompareChart();
+                UpdateTurnaroundCompareChart();
+                UpdateCPUPercCompareChart();
+                UpdateThroughputCompareChart();
             }
             else
             {
@@ -237,7 +365,142 @@ namespace CPUSchedulingSim
             }
         }
 
+        //
+        // Test Case Buttons
+        //
+        private void btnBasicTest1_Click(object sender, EventArgs e)
+        {
+            // Run SRTF w/ test case
+            processesSRTF = SchedulerTestCases.GetBasicTest1();
+            dgvSRTFTestCases.DataSource = processesSRTF; // Show the proceesses in the grid!
 
-        // Graph Handler Code
+            RunSRTFAlg(processesSRTF); // Run SRTF
+
+            UpdateResultLabels(processesSRTF, "SRTF"); // Update analysis values
+
+            // Run MLFQ w/ test case
+            processesMLFQ = SchedulerTestCases.GetBasicTest1();
+            dgvMLFQTestCases.DataSource = processesMLFQ; // Show the proceesses in the grid!
+
+            RunMLFQAlg(processesMLFQ); // Run MLFQ
+
+            UpdateResultLabels(processesMLFQ, "MLFQ"); // Update analysis values
+
+            lblCurrentTest.Text = "Currently Running: \"Basic Test 1\" Test!";
+        }
+
+        private void btnBasicTest2_Click(object sender, EventArgs e)
+        {
+            // Run SRTF w/ test case
+            processesSRTF = SchedulerTestCases.GetBasicTest2();
+            dgvSRTFTestCases.DataSource = processesSRTF; // Show the proceesses in the grid!
+
+            RunSRTFAlg(processesSRTF); // Run SRTF
+
+            UpdateResultLabels(processesSRTF, "SRTF"); // Update analysis values
+
+            // Run MLFQ w/ test case
+            processesMLFQ = SchedulerTestCases.GetBasicTest2();
+            dgvMLFQTestCases.DataSource = processesMLFQ; // Show the proceesses in the grid!
+
+            RunMLFQAlg(processesMLFQ); // Run MLFQ
+
+            UpdateResultLabels(processesMLFQ, "MLFQ"); // Update analysis values
+
+            lblCurrentTest.Text = "Currently Running: \"Basic Test 2\" Test!";
+        }
+
+        private void btnRandomProcTest_Click(object sender, EventArgs e)
+        {
+            int numProcesses;
+            if (int.TryParse(txtUserInputRand.Text, out numProcesses) && numProcesses >= 10 && numProcesses <= 50)
+            {
+                // Run SRTF w/ test case
+                processesSRTF = SchedulerTestCases.GenerateRandomProcesses(numProcesses);
+                dgvSRTFTestCases.DataSource = processesSRTF; // Show the proceesses in the grid!
+
+                RunSRTFAlg(processesSRTF); // Run SRTF
+
+                UpdateResultLabels(processesSRTF, "SRTF"); // Update analysis values
+
+                // Run MLFQ w/ test case
+                processesMLFQ = SchedulerTestCases.GenerateRandomProcesses(50);
+                dgvMLFQTestCases.DataSource = processesMLFQ; // Show the proceesses in the grid!
+
+                RunMLFQAlg(processesMLFQ); // Run MLFQ
+
+                UpdateResultLabels(processesMLFQ, "MLFQ"); // Update analysis values
+
+                lblNumProcesses.Text = $"Number of Processes Running: {numProcesses}";
+                lblCurrentTest.Text = "Currently Running: \"Randomized Processes\" Test!";
+            }
+            else
+            {
+                MessageBox.Show("!! - Please input a valid positive Num. Processes! (10-50)");
+            }
+        }
+
+        private void btnIdenATTest_Click(object sender, EventArgs e)
+        {
+            // Run SRTF w/ test case
+            processesSRTF = SchedulerTestCases.GetIdenticalArrivalBurst();
+            dgvSRTFTestCases.DataSource = processesSRTF; // Show the proceesses in the grid!
+
+            RunSRTFAlg(processesSRTF); // Run SRTF
+
+            UpdateResultLabels(processesSRTF, "SRTF"); // Update analysis values
+
+            // Run MLFQ w/ test case
+            processesMLFQ = SchedulerTestCases.GetIdenticalArrivalBurst();
+            dgvMLFQTestCases.DataSource = processesMLFQ; // Show the proceesses in the grid!
+
+            RunMLFQAlg(processesMLFQ); // Run MLFQ
+
+            UpdateResultLabels(processesMLFQ, "MLFQ"); // Update analysis values
+
+            lblCurrentTest.Text = "Currently Running: \"Identical Arrival and Burst Time\" Test!";
+        }
+
+        private void btnLongvShortTest_Click(object sender, EventArgs e)
+        {
+            // Run SRTF w/ test case
+            processesSRTF = SchedulerTestCases.GetLongVsShortBursts();
+            dgvSRTFTestCases.DataSource = processesSRTF; // Show the proceesses in the grid!
+
+            RunSRTFAlg(processesSRTF); // Run SRTF
+
+            UpdateResultLabels(processesSRTF, "SRTF"); // Update analysis values
+
+            // Run MLFQ w/ test case
+            processesMLFQ = SchedulerTestCases.GetLongVsShortBursts();
+            dgvMLFQTestCases.DataSource = processesMLFQ; // Show the proceesses in the grid!
+
+            RunMLFQAlg(processesMLFQ); // Run MLFQ
+
+            UpdateResultLabels(processesMLFQ, "MLFQ"); // Update analysis values
+
+            lblCurrentTest.Text = "Currently Running: \"Long vs. Short Burst Times\" Test!";
+        }
+
+        private void btnPrioritySkewed_Click(object sender, EventArgs e)
+        {
+            // Run SRTF w/ test case
+            processesSRTF = SchedulerTestCases.GetPrioritySkewed();
+            dgvSRTFTestCases.DataSource = processesSRTF; // Show the proceesses in the grid!
+
+            RunSRTFAlg(processesSRTF); // Run SRTF
+
+            UpdateResultLabels(processesSRTF, "SRTF"); // Update analysis values
+
+            // Run MLFQ w/ test case
+            processesMLFQ = SchedulerTestCases.GetPrioritySkewed();
+            dgvMLFQTestCases.DataSource = processesMLFQ; // Show the proceesses in the grid!
+
+            RunMLFQAlg(processesMLFQ); // Run MLFQ
+
+            UpdateResultLabels(processesMLFQ, "MLFQ"); // Update analysis values
+
+            lblCurrentTest.Text = "Currently Running: \"Priority Skewed\" Test!";
+        }
     }
 }
